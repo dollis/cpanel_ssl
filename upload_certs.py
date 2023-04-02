@@ -7,7 +7,19 @@ from pathlib import Path
 
 def main():
     parser = argparse.ArgumentParser(description="Upload certificate to CPANEL Host")
-    parser.add_argument("--domain", "-d", required=True)
+    parser.add_argument(
+        "--domain",
+        "-d",
+        required=True,
+        help="domain folder in the acmetool live folder",
+    )
+    parser.add_argument(
+        "--verbose",
+        "-v",
+        action="store_true",
+        help="output additional information on success",
+    )
+
     args = parser.parse_args()
     load_dotenv()
     cpanel_username = os.environ.get("USERNAME")
@@ -42,6 +54,10 @@ def main():
     response_data = r.json()
     if response_data["status"] == 0:
         raise SystemExit(response_data["errors"][0])
+
+    if args.verbose:
+        for message in response_data["messages"]:
+            print(message)
 
 
 if __name__ == "__main__":
